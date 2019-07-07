@@ -1,0 +1,40 @@
+# This section list the modules we will be using in this script
+from netmiko import ConnectHandler
+from getpass import getpass
+
+# This section will be asking the user the credentials and storing them in a variable
+username = input("Enter your username: ")
+password = getpass()
+enable = input("Enter your enable secret: ") 
+
+
+# This section will create  device profile for connecting to a device
+# using the variable that holds the user credentials and some static information
+cisco_switches = {
+                  "device_type": "cisco_xe",
+                  "ip": "192.168.1.1"
+                  "username": username,
+                  "password": password,
+                  "secret": enable
+                  }
+# This section we are making a ssh connection to the device and entering enable mode
+connection = ConnectHandler(**cisco_switches)
+ebable_mode = connection.enable()
+
+#This section we be send show and config commands to the device
+show_interfaces = connection.send_command('show ip interface brief')
+show_vlans = connection.send_command('show vlan brief')
+
+for n in range(20, 51):
+    config_list1 = ['vlan ' + str(n), 'name ' + 'Python_vlan_' + str(n)]
+    send_config_commands1 = connection.send_config_set(config_list1)
+
+
+config_list2 = ['inteface loopback 0', 'ip address 2.2.2.2 255.255.255.0']
+send_config_commands2 = connection.send_config_set(config_list2)
+show_interfaces = connection.send_command('show ip interface brief')
+show_vlans = connection.send_command('show vlan brief')
+
+
+# We are now logging off of the device.
+connection.disconnect
