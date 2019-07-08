@@ -1,3 +1,13 @@
+"""
+This is a basic script that uses the netmiko library
+along with the getpass library for a ssh connection
+to network devices. This script simply looks at the 
+current interfaces and vlans. It then adds on interface
+and multiple vlans. Finally it verifies that those 
+configuration has been added to the device.
+"""
+
+
 # This section list the modules we will be using in this script
 from netmiko import ConnectHandler
 from getpass import getpass
@@ -24,6 +34,10 @@ ebable_mode = connection.enable()
 #This section we be send show and config commands to the device
 show_interfaces = connection.send_command('show ip interface brief')
 show_vlans = connection.send_command('show vlan brief')
+print('####Should be able to see the current interfaces####')
+print(show_interfaces)
+print('####Should be able to see the current vlans###')
+print(show_vlans)
 
 for n in range(20, 51):
     config_list1 = ['vlan ' + str(n), 'name ' + 'Python_vlan_' + str(n)]
@@ -34,7 +48,10 @@ config_list2 = ['inteface loopback 0', 'ip address 2.2.2.2 255.255.255.0']
 send_config_commands2 = connection.send_config_set(config_list2)
 show_interfaces = connection.send_command('show ip interface brief')
 show_vlans = connection.send_command('show vlan brief')
-
+print('####Should be able to see the interface we just created####')
+print(show_interfaces)
+print('####Should be able to see the new vlans we created###')
+print(show_vlans)
 
 # We are now logging off of the device.
 connection.disconnect
